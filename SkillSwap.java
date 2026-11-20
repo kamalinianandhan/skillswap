@@ -55,6 +55,7 @@ public class SkillSwap extends JFrame {
 
         JButton searchButton = new JButton("Search Skill");
         JButton scheduleButton = new JButton("Schedule Session");
+        JButton addProviderButton = new JButton("Add Provider");
         JButton exitButton = new JButton("Exit");
 
         output = new JTextArea(15, 42);
@@ -63,13 +64,19 @@ public class SkillSwap extends JFrame {
         add(heading);
         add(new JLabel("Enter Skill:"));
         add(searchField);
+
         add(searchButton);
+        add(addProviderButton);
         add(scheduleButton);
         add(exitButton);
+
         add(new JScrollPane(output));
 
         // EVENT HANDLING
         searchButton.addActionListener(e -> searchSkill());
+
+        addProviderButton.addActionListener(
+        e -> addProvider());
 
         scheduleButton.addActionListener(
                 e -> scheduleSession());
@@ -109,6 +116,76 @@ public class SkillSwap extends JFrame {
             output.setText(e.getMessage());
         }
     }
+
+    // ADD NEW PROVIDER
+private void addProvider() {
+
+    String name = JOptionPane.showInputDialog(
+            this, "Enter Provider Name:");
+
+    if (name == null || name.trim().isEmpty()) {
+        return;
+    }
+
+    String email = JOptionPane.showInputDialog(
+            this, "Enter Email:");
+
+    if (email == null || email.trim().isEmpty()) {
+        return;
+    }
+
+    String rateInput = JOptionPane.showInputDialog(
+            this, "Enter Hourly Rate:");
+
+    if (rateInput == null) {
+        return;
+    }
+
+    try {
+
+        double rate = Double.parseDouble(rateInput);
+
+        if (rate <= 0) {
+            JOptionPane.showMessageDialog(
+                    this, "Rate must be greater than zero!");
+            return;
+        }
+
+        String skillInput = JOptionPane.showInputDialog(
+                this, "Enter Skills (comma separated):");
+
+        if (skillInput == null || skillInput.trim().isEmpty()) {
+            return;
+        }
+
+        // CREATE NEW PROVIDER
+        SkillProvider newProvider =
+                new SkillProvider(name.trim(), email.trim(), rate);
+
+        // ADD MULTIPLE SKILLS
+        String[] skills = skillInput.split(",");
+
+        for (String skill : skills) {
+            if (!skill.trim().isEmpty()) {
+                newProvider.addSkill(skill.trim());
+            }
+        }
+
+        // ADD TO ARRAYLIST
+        providers.add(newProvider);
+
+        JOptionPane.showMessageDialog(
+                this, "Provider Added Successfully!");
+
+        output.setText("New Provider Added!\n\n"
+                + newProvider.toString());
+
+    } catch (NumberFormatException e) {
+
+        JOptionPane.showMessageDialog(
+                this, "Please enter a valid hourly rate!");
+    }
+}
 
     private void scheduleSession() {
 
